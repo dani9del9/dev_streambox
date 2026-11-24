@@ -1,0 +1,96 @@
+/* StreamBox — estilos dentro de las webs de streaming. Variables --sb-* según tema y colores elegidos. */
+.sb-ui{font-family:"Netflix Sans","Helvetica Neue",Roboto,Arial,sans-serif;box-sizing:border-box;color-scheme:var(--sb-scheme,dark)}
+.sb-ui *{box-sizing:border-box}
+.sb-icon{font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif}
+
+/* Botón sobre las miniaturas */
+.sb-cardbtn{position:absolute;top:6px;right:6px;z-index:6;display:inline-flex;align-items:center;gap:3px;height:28px;min-width:28px;padding:0 6px;border-radius:14px;border:1px solid rgba(255,255,255,.25);background:rgba(20,18,22,.78);color:#fff;cursor:pointer;opacity:0;transform:scale(.92);transition:opacity .15s,transform .15s;backdrop-filter:blur(4px);font-size:14px;line-height:1}
+.sb-cardbtn.on{opacity:1;transform:none}
+*:hover>.sb-cardbtn,.sb-cardbtn:focus-visible{opacity:1;transform:none}
+.sb-cardbtn:hover{border-color:var(--sb-acc);box-shadow:0 0 0 2px var(--sb-acc)}
+.sb-btn-plus{font-weight:700;font-size:16px;margin-left:1px;background:var(--sb-grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sb-btn-icons{display:inline-flex;gap:2px}
+.sb-btn-more{font-size:11px;font-weight:700;opacity:.85}
+
+/* Botón en línea (ficha, vista previa, cartel) */
+.sb-inlinebtn{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 16px;margin:0 6px;border-radius:21px;border:2px solid rgba(255,255,255,.45);background:rgba(42,42,42,.65);color:#fff;font:600 15px/1 "Netflix Sans","Helvetica Neue",Roboto,Arial,sans-serif;cursor:pointer;white-space:nowrap;vertical-align:middle;flex:0 0 auto}
+.sb-inlinebtn:hover{border-color:#fff;background:rgba(70,70,70,.8)}
+.sb-inlinebtn.on{border-color:transparent;background:var(--sb-grad);box-shadow:0 2px 12px var(--sb-shadow)}
+.sb-inlinebtn.sb-mini{height:32px;min-width:32px;padding:0 8px;gap:4px;border-radius:16px;margin:0 4px}
+.sb-inlinebtn.sb-billboard{height:44px;padding:0 20px;border-radius:6px;margin-left:10px}
+.sb-inlinebtn.sb-floating{position:absolute;top:14px;left:14px;z-index:20}
+.sb-fab{position:fixed;right:24px;bottom:24px;z-index:2147483000;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+
+/* Menú de listas */
+#sb-menu{position:fixed;z-index:2147483600;width:290px;max-height:min(70vh,520px);display:flex;flex-direction:column;background:var(--sb-panel);color:var(--sb-txt);border:1px solid var(--sb-line);border-radius:14px;padding:8px 0 6px;box-shadow:0 14px 40px rgba(0,0,0,.45);font-size:14px;line-height:1.35;text-align:left}
+.sb-menu-head{display:flex;align-items:center;gap:8px;padding:6px 16px 10px;border-bottom:1px solid var(--sb-line)}
+.sb-menu-title{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:var(--sb-grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sb-menu-lists{overflow:auto;padding:4px 0;overscroll-behavior:contain;flex:1 1 auto;min-height:0}
+.sb-menu-item{display:flex;align-items:center;gap:10px;padding:8px 16px;cursor:pointer;margin:0}
+.sb-menu-item:hover{background:var(--sb-acc-soft)}
+.sb-menu-item input{accent-color:var(--sb-acc);width:16px;height:16px;margin:0;flex:0 0 16px}
+.sb-menu-name{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-menu-item small{color:var(--sb-mut);font-size:12px}
+.sb-menu-empty{padding:10px 16px;color:var(--sb-mut)}
+.sb-menu-new{display:block;width:calc(100% - 24px);margin:8px 12px 6px;padding:9px 11px;border-radius:8px;border:1px solid var(--sb-line);background:var(--sb-bg);color:inherit;font:inherit;outline:none}
+.sb-menu-new:focus{border-color:var(--sb-acc)}
+.sb-menu-foot{display:flex;align-items:center;gap:8px;width:100%;padding:9px 16px 6px;border:0;border-top:1px solid var(--sb-line);background:none;color:var(--sb-mut);font:inherit;font-size:13px;cursor:pointer;text-align:left}
+.sb-menu-foot:hover{color:var(--sb-acc)}
+
+/* Insignia de plataforma */
+.sb-pbadge{display:inline-flex;align-items:center;justify-content:center;height:20px;min-width:20px;padding:0 6px;border-radius:5px;color:#fff;font:800 11px/1 Arial,sans-serif;letter-spacing:.02em;flex:0 0 auto}
+.sb-pbadge.small{height:18px;min-width:18px;font-size:10px;padding:0 5px}
+
+/* Aviso */
+#sb-toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:2147483647;background:var(--sb-panel,#222);color:var(--sb-txt,#fff);border:1px solid var(--sb-line,#444);padding:11px 18px;border-radius:10px;font-size:14px;box-shadow:0 6px 20px rgba(0,0,0,.4);transition:opacity .3s}
+#sb-toast.err{background:#c0392b;color:#fff;border-color:transparent}
+#sb-toast.out{opacity:0}
+
+/* Mi puntuación */
+.sb-menu-rate{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 16px 2px;border-top:1px solid var(--sb-line);font-size:13px;color:var(--sb-mut)}
+.sb-stars{display:inline-flex;gap:1px}
+.sb-stars button{border:0;background:none;padding:0 1px;cursor:pointer;line-height:1;color:var(--sb-line,#555);transition:transform .1s,color .1s}
+.sb-stars button.on{color:#f5b301}
+.sb-stars button.hov.on{color:#ffcc33}
+.sb-stars button:hover{transform:scale(1.18)}
+
+/* Cola de reproducción */
+.sb-menu-queue{display:flex;gap:6px;padding:8px 12px 2px;flex-wrap:wrap}
+.sb-qbtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:32px;padding:0 12px;border-radius:16px;border:1px solid var(--sb-line);background:var(--sb-panel2);color:var(--sb-txt);font:600 13px/1 inherit;font-family:inherit;cursor:pointer;white-space:nowrap}
+.sb-qbtn:hover{border-color:var(--sb-acc)}
+.sb-qbtn.on{border-color:var(--sb-acc);background:var(--sb-acc-soft)}
+.sb-qbtn.main{border-color:transparent;background:var(--sb-grad);color:#fff}
+#sb-qnext{position:fixed;right:28px;bottom:110px;z-index:2147483500;display:flex;align-items:center;gap:12px;padding:14px 16px;max-width:520px;background:var(--sb-panel);color:var(--sb-txt);border:1px solid var(--sb-line);border-radius:14px;box-shadow:0 12px 36px rgba(0,0,0,.5)}
+#sb-qnext b{font-size:22px;min-width:26px;text-align:center;background:var(--sb-grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sb-qnext-txt{min-width:0;flex:1}
+.sb-qnext-txt small{color:var(--sb-mut);font-size:12px}
+.sb-qnext-name{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
+#sb-qbar{position:fixed;top:16px;left:50%;transform:translate(-50%,-8px);z-index:2147483400;display:flex;align-items:center;gap:10px;padding:6px 8px 6px 12px;border-radius:20px;background:rgba(20,18,22,.82);color:#fff;font-size:13px;backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.15);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
+#sb-qbar.show{opacity:1;pointer-events:auto;transform:translate(-50%,0)}
+#sb-qbar .sb-qbtn{height:26px;padding:0 9px;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:#fff}
+.sb-qbar-next{color:rgba(255,255,255,.7);max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Botón dentro de los controles del reproductor */
+.sb-inlinebtn.sb-player{height:44px;min-width:44px;padding:0 10px;margin:0 8px;border:0;border-radius:22px;background:rgba(255,255,255,.08);align-self:center}
+.sb-inlinebtn.sb-player:hover{background:rgba(255,255,255,.2);transform:scale(1.08)}
+.sb-inlinebtn.sb-player.on{background:rgba(255,255,255,.12);box-shadow:none}
+.sb-inlinebtn.sb-player .sb-logo{width:26px;height:26px}
+.sb-inlinebtn.sb-player .sb-btn-plus{font-size:20px}
+
+/* Notas */
+.sb-menu-extras{border-top:1px solid var(--sb-line);padding-bottom:4px}
+.sb-menu-extras .sb-menu-rate{border-top:0}
+.sb-menu-note{display:block;width:calc(100% - 24px);margin:6px 12px 2px;padding:8px 10px;border-radius:8px;border:1px solid var(--sb-line);background:var(--sb-bg);color:inherit;font:inherit;font-size:13px;resize:vertical;min-height:40px;max-height:160px;outline:none}
+.sb-menu-note:focus{border-color:var(--sb-acc)}
+.sb-menu-hint{display:block;padding:2px 16px 4px;color:var(--sb-mut);font-size:11.5px}
+.sb-inlinebtn.sb-near{position:fixed;z-index:2147483300;margin:0}
+
+/* Prime Video */
+.sb-inlinebtn.sb-round{width:48px;height:48px;min-width:48px;padding:0;margin:0 0 0 12px;gap:0;justify-content:center;border-radius:50%;border:2px solid rgba(255,255,255,.35);background:rgba(25,30,37,.7);flex:0 0 auto}
+.sb-inlinebtn.sb-round:hover{border-color:#fff;background:rgba(60,66,74,.85)}
+.sb-inlinebtn.sb-round.on{border-color:transparent}
+.sb-inlinebtn.sb-round .sb-logo{width:24px;height:24px}
+.sb-inlinebtn.sb-round .sb-btn-plus{display:none}
+.sb-inlinebtn.sb-round .sb-btn-icons .sb-icon{width:22px!important;height:22px!important;flex-basis:22px!important}
+.sb-inlinebtn.sb-round .sb-btn-icons .sb-icon~.sb-icon,.sb-inlinebtn.sb-round .sb-btn-more{display:none}
+.sb-inlinebtn.sb-prime-player{height:40px;min-width:40px;padding:0 8px;margin:0 6px;background:rgba(255,255,255,.08)}

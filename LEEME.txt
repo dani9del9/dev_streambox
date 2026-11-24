@@ -1,0 +1,36 @@
+StreamBox - tus listas de pelis y series de Netflix, Prime Video, Disney+ y Max
+==============================================================================
+Hermana de YTBox. Versión 0.3.2: Netflix, Prime Video y Disney+ (Max, próximamente).
+
+CHROME / EDGE / BRAVE
+ 1. Abre chrome://extensions (o edge://extensions) y activa "Modo de desarrollador".
+ 2. "Cargar descomprimida" -> elige esta carpeta (dev_streambox).
+ 3. Tras cada cambio: botón de recargar de StreamBox y recarga la pestaña de la plataforma.
+
+FIREFOX (versión 128 o superior)
+ Primero genera la versión de Firefox:   node build.js
+ Se crea dist/firefox/ (carpeta) y dist/streambox-firefox.xpi (paquete).
+ a) Para probar: about:debugging#/runtime/this-firefox -> "Cargar complemento temporal..."
+    -> elige dist/firefox/manifest.json
+ b) Para tenerla siempre: firma dist/streambox-firefox.xpi en addons.mozilla.org
+    ("En tu propio sitio"), igual que YTBox.
+ Al instalar, acepta los permisos de netflix.com, primevideo.com, amazon.* y disneyplus.com
+ (en Firefox: about:addons -> StreamBox -> Permisos, si no se activan solos).
+
+COMPILAR
+ node build.js  (no necesita instalar nada) genera dist/chrome, dist/firefox,
+ dist/streambox-chrome.zip y dist/streambox-firefox.xpi. Id de Firefox: streambox@dani9del9.
+
+ESTRUCTURA
+ common.js            almacenamiento, listas, títulos, iconos, estrellas, tema y registro de plataformas (SBP)
+ platforms/netflix.js adaptador de Netflix: enlaces -> id, miniaturas (cards), botones en línea (spots),
+                      datos del título (enrich/fetchMeta) y botones del reproductor (player)
+ platforms/netflix-bridge.js  lee la caché y los metadatos de Netflix (mundo de la página)
+ platforms/prime.js   adaptador de Prime Video (primevideo.com y amazon.*/gp/video)
+ platforms/disney.js  adaptador de Disney+ (reproductor con shadow DOM)
+ content.js           común a todas las plataformas: botones, menú de listas, puntuación, reproductor y cola
+ manager.*            gestor (listas, todos los títulos, ajustes, ayuda)
+ help.js              textos de la ayuda
+ i18n*.js             idiomas (claves = texto en español)
+ Para añadir una plataforma: platforms/<id>.js con la misma interfaz, su dominio en
+ host_permissions y content_scripts del manifest, y su <script> en manager.html.

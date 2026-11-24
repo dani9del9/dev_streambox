@@ -1,0 +1,11 @@
+{
+  "extName": {
+    "message": "StreamBox — tus listas de Netflix, Prime Video, Disney+ y Max"
+  },
+  "extDesc": {
+    "message": "Crea tus propias listas de pelis y series con iconos y colores, mezclando plataformas de streaming, y añade títulos desde la propia web."
+  },
+  "actionTitle": {
+    "message": "Gestionar listas"
+  }
+}

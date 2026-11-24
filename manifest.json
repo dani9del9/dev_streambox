@@ -1,0 +1,114 @@
+{
+  "manifest_version": 3,
+  "name": "__MSG_extName__",
+  "short_name": "StreamBox",
+  "version": "0.3.2",
+  "description": "__MSG_extDesc__",
+  "default_locale": "es",
+  "permissions": [
+    "storage",
+    "unlimitedStorage"
+  ],
+  "host_permissions": [
+    "https://www.netflix.com/*",
+    "https://www.primevideo.com/*",
+    "https://www.amazon.es/gp/video/*",
+    "https://www.amazon.com/gp/video/*",
+    "https://www.amazon.co.uk/gp/video/*",
+    "https://www.amazon.de/gp/video/*",
+    "https://www.amazon.fr/gp/video/*",
+    "https://www.amazon.it/gp/video/*",
+    "https://www.disneyplus.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "__MSG_actionTitle__",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_page": "manager.html",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.netflix.com/*"
+      ],
+      "js": [
+        "i18n.js",
+        "i18n-en.js",
+        "i18n-gl.js",
+        "svg-icons.js",
+        "common.js",
+        "platforms/netflix.js",
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://www.netflix.com/*"
+      ],
+      "js": [
+        "platforms/netflix-bridge.js"
+      ],
+      "world": "MAIN",
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://www.primevideo.com/*",
+        "https://www.amazon.es/gp/video/*",
+        "https://www.amazon.com/gp/video/*",
+        "https://www.amazon.co.uk/gp/video/*",
+        "https://www.amazon.de/gp/video/*",
+        "https://www.amazon.fr/gp/video/*",
+        "https://www.amazon.it/gp/video/*"
+      ],
+      "js": [
+        "i18n.js",
+        "i18n-en.js",
+        "i18n-gl.js",
+        "svg-icons.js",
+        "common.js",
+        "platforms/prime.js",
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://www.disneyplus.com/*"
+      ],
+      "js": [
+        "i18n.js",
+        "i18n-en.js",
+        "i18n-gl.js",
+        "svg-icons.js",
+        "common.js",
+        "platforms/disney.js",
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}

@@ -1,6 +1,12 @@
-StreamBox - tus listas de pelis y series de Netflix, Prime Video, Disney+ y Max
-==============================================================================
-Hermana de YTBox. Versión 0.3.2: Netflix, Prime Video y Disney+ (Max, próximamente).
+StreamBox - tus listas de pelis y series de Netflix, Prime Video, Disney+, Movistar Plus+ y Max
+===============================================================================================
+Hermana de YTBox. Versión 0.10.0: Netflix, Prime Video, Disney+ y Movistar Plus+ (Max, próximamente).
+Novedades: seguimiento de series (0.5.0), Movistar Plus+ y desplegable «Info» con notas de
+FilmAffinity, IMDb y Rotten Tomatoes (0.6.0); diario y resumen del año, «¿Qué veo esta noche?»,
+«Se va pronto», dónde más está, maratones, suscripciones, marcadores, listas compartidas y
+«Ver juntos» (0.7.0–0.8.0); columna de herramientas, Descubrir (recomendador) y
+«Reproducir en…» con QR (0.9.0); Mis dispositivos: abrir títulos en la tele
+(Google TV / Android TV) o en el móvil (ntfy) (0.10.0).
 
 CHROME / EDGE / BRAVE
  1. Abre chrome://extensions (o edge://extensions) y activa "Modo de desarrollador".
@@ -14,7 +20,8 @@ FIREFOX (versión 128 o superior)
     -> elige dist/firefox/manifest.json
  b) Para tenerla siempre: firma dist/streambox-firefox.xpi en addons.mozilla.org
     ("En tu propio sitio"), igual que YTBox.
- Al instalar, acepta los permisos de netflix.com, primevideo.com, amazon.* y disneyplus.com
+ Al instalar, acepta los permisos de netflix.com, primevideo.com, amazon.*, disneyplus.com,
+ movistarplus.es y, para «Info», filmaffinity.com, imdb.com, rottentomatoes.com y wikidata.org
  (en Firefox: about:addons -> StreamBox -> Permisos, si no se activan solos).
 
 COMPILAR
@@ -28,6 +35,20 @@ ESTRUCTURA
  platforms/netflix-bridge.js  lee la caché y los metadatos de Netflix (mundo de la página)
  platforms/prime.js   adaptador de Prime Video (primevideo.com y amazon.*/gp/video)
  platforms/disney.js  adaptador de Disney+ (reproductor con shadow DOM)
+ platforms/movistar.js adaptador de Movistar Plus+ (datos de la ficha en «datos_ficha»)
+ manager-stats.js     Mi diario, resumen del año y «tu web afín»
+ manager-tonight.js   ¿Qué veo esta noche? y Se va pronto
+ manager-plan.js      Maratones, Suscripciones y Marcadores
+ manager-share.js     Listas compartidas por código
+ manager-discover.js  Descubrir: recomendaciones a partir de tus títulos y estrellas
+ manager-cast.js      «Reproducir en…» (QR para el móvil, compartir, ayuda para la tele)
+ qr.js                generador de códigos QR
+ manager-devices.js   Mis dispositivos: tele (adb, vía el ayudante) y móvil (ntfy)
+ native-host/         ayudante del ordenador para las teles: instalar.bat / desinstalar.bat
+                      (Node.js + adb; NO va dentro de la extensión)
+ info.js              «Info»: notas de FilmAffinity, IMDb y Rotten Tomatoes y datos básicos (en segundo plano)
+ background.js        abre el gestor, sincroniza, comprueba las series seguidas y busca la «Info»
+ key-guard.js         deja escribir en los campos de StreamBox aunque la web capture el teclado
  content.js           común a todas las plataformas: botones, menú de listas, puntuación, reproductor y cola
  manager.*            gestor (listas, todos los títulos, ajustes, ayuda)
  help.js              textos de la ayuda

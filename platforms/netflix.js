@@ -17,10 +17,40 @@
     if (!res.ok) throw new Error('Netflix ' + res.status);
     return parseMeta(await res.text());
   }
+  // «Se va pronto»: si la página del título dice hasta cuándo está disponible
+  async function leavingCheck(pid, t, fetchFn = fetch) {
+    const res = await fetchFn(titleUrl(pid), { credentials: 'omit' });
+    if (!res.ok) return 0;
+    const html = await res.text();
+    return SB.leavingFromText(html.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<[^>]+>/g, '\n'));
+  }
   function parseMeta(html) {
     const out = SB.parseHtmlMeta(html);
     if (!out.year) out.year = (html.match(/data-uia="item-year"[^>]*>\s*(\d{4})/) || [])[1] || '';
+    // Géneros: los de la ficha («item-genre(s)») y el apartado «Géneros» de «Más detalles»
+    const g = [];
+    for (const m of html.matchAll(/(?:class="[^"]*\bitem-genres?\b[^"]*"|data-uia="[^"]*genre[^"]*")[^>]*>([^<]+)</g)) g.push(...m[1].split(','));
+    const block = html.match(/>\s*(?:Géneros|Genres|Xéneros|Gêneros|Genres)\s*<\/[^>]+>([\s\S]{0,1500}?)<\/(?:div|li|section)>/i);
+    if (block) g.push(...block[1].replace(/<[^>]+>/g, ',').split(','));
+    out.genres = SB.cleanGenres(out.genres.concat(g));
     return out;
+  }
+
+  // ---------- Seguimiento ----------
+  // En segundo plano: la página pública dice cuántas temporadas hay (JSON-LD «numberOfSeasons»)
+  async function followCheck(pid, t, fetchFn = fetch) {
+    const res = await fetchFn(titleUrl(pid), { credentials: 'omit' });
+    if (!res.ok) throw new Error('Netflix ' + res.status);
+    const html = await res.text();
+    const n = +((html.match(/"numberOfSeasons"\s*:\s*"?(\d+)/) || [])[1] || 0);
+    return n ? { seasons: n, lastSeason: 'T' + n } : null;
+  }
+  // Dentro de Netflix: la propia web guarda cuántos episodios tiene la serie (sin pedir nada más)
+  async function followObserve(pid) {
+    if (typeof window === 'undefined' || !location.hostname.endsWith('netflix.com')) return null;
+    const d = await ask('nf-follow', pid, 800);
+    if (!d || (!d.seasons && !d.episodes)) return null;
+    return { seasons: d.seasons || 0, season: 'total', episodes: d.episodes || null, lastSeason: d.seasons ? 'T' + d.seasons : '' };
   }
 
   // ---------- Solo dentro de netflix.com ----------
@@ -76,7 +106,8 @@
     const yearEl = $('.year, [data-uia*="year"]', m);
     const year = ((yearEl ? yearEl.textContent : metaText).match(/\b(19|20)\d{2}\b/) || [''])[0];
     const boxart = $('img.previewModal--boxart, .previewModal--player_container img, img.storyArt', m);
-    return { pid, title: (logo && logo.alt) || (header && header.textContent) || '', type, year, img: goodImg(boxart) };
+    const genres = $$('[data-uia="previewModal--tags-genre"] a, [data-uia*="tags-genre"] a, .previewModal--tags[data-uia*="genre"] a', m).map(a => a.textContent);
+    return { pid, title: (logo && logo.alt) || (header && header.textContent) || '', type, year, img: goodImg(boxart), genres: SB.cleanGenres(genres) };
   }
 
   // Sitios donde va un botón «Añadir a lista» en línea: la ficha (modal grande), la vista previa al pasar
@@ -125,7 +156,7 @@
       // Delante del botón de pantalla completa (o del de velocidad / subtítulos si no está)
       const ref = $('button[data-uia^="control-fullscreen"]') || $('[data-uia^="control-fullscreen"]') || $('button[data-uia="control-speed"]') || $('button[data-uia="control-audio-subtitle"]');
       const slot = ref && SB.rowSlot(ref, 3);
-      if (show && slot) out.push({ root: slot.parent, kind: 'player', info: Object.assign({}, show), slot });
+      if (show && slot) out.push({ root: slot.parent, kind: 'player', info: Object.assign({}, show), slot: Object.assign(slot, { mimic: slot.before !== ref, size: Math.round(ref.getBoundingClientRect().height) || 44 }) });
       return out;
     }
     for (const m of $$('.previewModal--container, .detail-modal, .mini-modal')) {
@@ -164,7 +195,7 @@
   // Datos de la caché de la web (falcorCache), leídos por netflix-bridge.js en el «mundo» de la página
   let seq = 0;
   const pageCache = pid => ask('nf-meta', pid, 800);
-  function ask(kind, pid, ms) {
+  function ask(kind, pid, ms, extra) {
     return new Promise(res => {
       const id = 'sb' + (++seq);
       const on = e => {
@@ -172,16 +203,20 @@
         window.removeEventListener('message', on); res(e.data.data || null);
       };
       window.addEventListener('message', on);
-      window.postMessage({ sbReq: kind, id, pid }, location.origin);
+      window.postMessage({ sbReq: kind, id, pid, extra }, location.origin);
       setTimeout(() => { window.removeEventListener('message', on); res(null); }, ms);
     });
   }
   // Completa tipo, año, título y carátula: primero la caché de la web, si falta algo la página pública
   async function enrich(pid) {
     const out = {};
-    const merge = d => { if (d) for (const k of ['title', 'type', 'year', 'img']) if (d[k] && !out[k]) out[k] = String(d[k]); };
+    const merge = d => {
+      if (!d) return;
+      for (const k of ['title', 'type', 'year', 'img']) if (d[k] && !out[k]) out[k] = String(d[k]);
+      if (d.genres && d.genres.length && !(out.genres && out.genres.length)) out.genres = d.genres;
+    };
     if (typeof window !== 'undefined' && location.hostname.endsWith('netflix.com')) merge(await pageCache(pid));
-    if (!out.type || !out.year || !out.title) { try { merge(await fetchMeta(pid)); } catch (e) { console.warn('[StreamBox] Netflix', pid, e); } }
+    if (!out.type || !out.year || !out.title || !(out.genres && out.genres.length)) { try { merge(await fetchMeta(pid)); } catch (e) { console.warn('[StreamBox] Netflix', pid, e); } }
     return out;
   }
 
@@ -189,6 +224,7 @@
   // (Netflix los marca con data-uia; si cambia, se reconocen por el texto del botón de «saltar»)
   const SKIP_GENERIC = '.watch-video--skip-content-button, button[class*="skip-content"]';
   const player = {
+    title: () => { const e = document.querySelector('[data-uia="video-title"]'); return e ? e.innerText.replace(/\s*\n\s*/g, ' · ').trim() : ''; },
     active: () => location.pathname.startsWith('/watch'),
     skipIntro: { sel: '[data-uia="player-skip-intro"]', generic: SKIP_GENERIC, text: /intro|apertura|opening|abertura/i },
     skipRecap: { sel: '[data-uia="player-skip-recap"], [data-uia="player-skip-preplay"]', generic: SKIP_GENERIC, text: /resumen|recap|resumo|previously|anteriormente/i },
@@ -198,12 +234,14 @@
     currentId: () => parseUrl(location.pathname),
     video: () => $$('video').find(v => v.duration > 0) || $('video'),
     credits: '[data-uia="watch-credits-seamless-button"], [data-uia*="postplay"], .PlayerControlsNeo__postplay, [class*="postplay"]',
+    // Mover, reproducir o pausar con el reproductor de Netflix (tocar el vídeo directamente da error)
+    control: (op, t) => ask('nf-ctl', '', 1500, { op, t }),
   };
   const watchUrl = pid => 'https://www.netflix.com/watch/' + pid;
 
   SBP.register({
     id: 'netflix', name: 'Netflix', short: 'N', color: '#e50914', hosts: ['netflix.com'],
-    parseUrl, titleUrl, watchUrl, fetchMeta, parseMeta, cards, spots, enrich, player,
+    parseUrl, titleUrl, watchUrl, fetchMeta, parseMeta, cards, spots, enrich, player, followCheck, followObserve, leavingCheck,
     dark: () => true,
   });
 })();

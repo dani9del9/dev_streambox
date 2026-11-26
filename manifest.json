@@ -2,15 +2,19 @@
   "manifest_version": 3,
   "name": "__MSG_extName__",
   "short_name": "StreamBox",
-  "version": "0.3.2",
+  "version": "0.10.0",
   "description": "__MSG_extDesc__",
   "default_locale": "es",
   "permissions": [
     "storage",
-    "unlimitedStorage"
+    "unlimitedStorage",
+    "alarms",
+    "notifications",
+    "nativeMessaging"
   ],
   "host_permissions": [
     "https://www.netflix.com/*",
+    "https://ntfy.sh/*",
     "https://www.primevideo.com/*",
     "https://www.amazon.es/gp/video/*",
     "https://www.amazon.com/gp/video/*",
@@ -18,7 +22,13 @@
     "https://www.amazon.de/gp/video/*",
     "https://www.amazon.fr/gp/video/*",
     "https://www.amazon.it/gp/video/*",
-    "https://www.disneyplus.com/*"
+    "https://www.disneyplus.com/*",
+    "https://ver.movistarplus.es/*",
+    "https://www.filmaffinity.com/*",
+    "https://www.rottentomatoes.com/*",
+    "https://www.imdb.com/*",
+    "https://query.wikidata.org/*",
+    "https://www.justwatch.com/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -40,6 +50,25 @@
     "128": "icons/icon128.png"
   },
   "content_scripts": [
+    {
+      "matches": [
+        "https://www.amazon.co.uk/gp/video/*",
+        "https://www.amazon.com/gp/video/*",
+        "https://www.amazon.de/gp/video/*",
+        "https://www.amazon.es/gp/video/*",
+        "https://www.amazon.fr/gp/video/*",
+        "https://www.amazon.it/gp/video/*",
+        "https://www.disneyplus.com/*",
+        "https://www.netflix.com/*",
+        "https://www.primevideo.com/*",
+        "https://ver.movistarplus.es/*"
+      ],
+      "js": [
+        "key-guard.js"
+      ],
+      "world": "MAIN",
+      "run_at": "document_start"
+    },
     {
       "matches": [
         "https://www.netflix.com/*"
@@ -103,6 +132,24 @@
         "svg-icons.js",
         "common.js",
         "platforms/disney.js",
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://ver.movistarplus.es/*"
+      ],
+      "js": [
+        "i18n.js",
+        "i18n-en.js",
+        "i18n-gl.js",
+        "svg-icons.js",
+        "common.js",
+        "platforms/movistar.js",
         "content.js"
       ],
       "css": [

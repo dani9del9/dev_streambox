@@ -31,7 +31,7 @@ const SB_HELP = [
         '**En las miniaturas**: un botón pequeño en la esquina de cada carátula. Si el título ya está en alguna lista se ven siempre sus iconos; si no, el botón aparece al pasar el ratón.',
         '**En la vista previa** que sale al dejar el ratón sobre una miniatura, junto a los botones de la plataforma.',
         '**En la ficha** del título (al pulsar «Más información» o al abrir su página) y en el cartel grande de la portada de Netflix: «Añadir a lista» o «En 2 listas».',
-        '**En el reproductor**, junto a sus botones (en Netflix, Prime Video y Disney+): para guardar, puntuar o anotar lo que estás viendo sin salir. En las series se guarda la serie, no el episodio.'],
+        '**En el reproductor**, junto a sus botones (en Netflix, Prime Video, Disney+ y Movistar Plus+): para guardar, puntuar o anotar lo que estás viendo sin salir. En las series se guarda la serie, no el episodio.'],
       ['tip', 'Si la vista previa tapa el botón de la miniatura, usa el botón que aparece dentro de la propia vista previa.'],
       'Al pulsarlo se abre un menú con tus listas: marca o desmarca las que quieras. Al guardar un título se apuntan su plataforma, enlace, carátula, tipo (peli o serie) y año.',
     ],
@@ -45,6 +45,17 @@ const SB_HELP = [
         '**Meter o sacar de listas**: bajo cada título están los iconos de todas tus listas; los encendidos son las listas en las que está. Púlsalos para cambiarlo.',
         '**Buscador y filtros**: busca por título o año, y filtra por plataforma y por tipo (pelis o series).',
         '**Todos los títulos**: en el menú lateral, todo lo que has guardado junto, con los mismos filtros y un filtro por lista.'],
+    ],
+  },
+  {
+    id: 'categorias', title: 'Categorías automáticas', icon: 'etiqueta', blocks: [
+      'Cada título que guardas se mete solo en sus **categorías** (Drama, Comedia, Ciencia ficción, Documental, Infantil y familiar…) a partir de los géneros que da su plataforma. Como cada plataforma los llama distinto («Series dramáticas», «Dramas», «Drama»), StreamBox los junta en unas categorías comunes.',
+      ['ul',
+        '**En el menú lateral**, bajo tus listas, salen las categorías que tienen algún título, con cuántos hay. Al pulsar una ves todos sus títulos, con los mismos filtros que en una lista.',
+        '**Filtro por categoría** en cada lista y en «Todos los títulos».',
+        '**Bajo cada carátula** se ven sus categorías; pulsa una para ir a ella.',
+        '**Corregir**: con el lápiz ✎ marcas o desmarcas categorías; «↺ Automáticas» vuelve a las de la plataforma.',
+        '**Títulos que guardaste antes**: el botón «🏷 Categorizar mis títulos» busca sus géneros en su plataforma (tarda unos segundos por título).'],
     ],
   },
   {
@@ -67,6 +78,101 @@ const SB_HELP = [
         'Si sales del reproductor, la cola se pone en pausa para que otro vídeo que veas no la haga avanzar.'],
       'La cola puede mezclar plataformas: al pasar a un título de otra plataforma se abre en ella.',
       ['tip', 'La cola es de este navegador: no se sincroniza con los demás.'],
+    ],
+  },
+  {
+    id: 'info', title: 'Info: notas en otras webs y datos', icon: 'estrella', blocks: [
+      'Cada tarjeta del gestor tiene un botón **«Info ▾»** que despliega, sin ocupar sitio en la lista:',
+      ['ul',
+        '**Notas**: FilmAffinity (sobre 10, con sus votos), IMDb y Rotten Tomatoes (🍅 crítica y 🍿 público). Cada nota lleva a su página.',
+        '**Datos**: título original, año, duración, país, dirección (o creación en las series), reparto, géneros y sinopsis (pulsa la sinopsis para leerla entera).'],
+      'StreamBox busca el título en FilmAffinity y, a partir de ahí, encuentra el mismo en IMDb y Rotten Tomatoes. Lo que encuentra se guarda una semana; con ⟳ se vuelve a buscar.',
+      ['tip', 'IMDb solo deja leer su nota si tu navegador ya ha entrado alguna vez en imdb.com; si no, verás su botón con una flecha para abrirlo. Si no encuentra un título (por ejemplo, porque la plataforma usa otro nombre), corrige el nombre con ✎ y pulsa ⟳.'],
+    ],
+  },
+  {
+    id: 'seguimiento', title: 'Seguir series (episodios nuevos)', icon: 'campana', blocks: [
+      'Sigue las series que estás viendo y StreamBox te avisa cuando salgan **episodios o temporadas nuevas**:',
+      ['ul',
+        '**Seguir**: en el menú de StreamBox de una serie (en la plataforma) pulsa «🔔 Seguir», o la campana de su tarjeta en el gestor.',
+        '**Siguiendo** (en la barra lateral del gestor): cada serie con sus temporadas, cuántos episodios tiene la última y la fecha del último episodio (y del próximo, si la plataforma ya lo anuncia).',
+        '**Novedades**: cuando aparece algo nuevo la serie brilla con «✨ ¡Episodios nuevos!», sube arriba del todo y el icono de la extensión muestra un número. Al abrirla o pulsar «✓ Visto» deja de brillar.',
+        '**Cuándo se comprueba**: cada 6 horas en segundo plano, cada vez que entras en la serie dentro de la plataforma y cuando pulsas «⟳ Comprobar ahora».'],
+      'Cada plataforma da información distinta: **Prime Video** da la fecha de cada episodio y la del próximo; **Netflix** da el número de temporadas en segundo plano y los episodios cuando abres la serie; **Movistar Plus+** da el número de episodios de la última temporada y la fecha de cada uno; en **Disney+** se comprueba al abrir la serie en la plataforma (sin fechas, verás «Comprobado desde el…»).',
+      ['tip', 'La primera comprobación solo guarda cómo está la serie: el aviso salta cuando, a partir de ahí, aparece algo nuevo.'],
+    ],
+  },
+  {
+    id: 'esta-noche', title: '¿Qué veo esta noche?', icon: 'palomitas', blocks: [
+      'Dile cuánto tiempo tienes, qué te apetece, con quién lo ves y si quieres peli o serie: StreamBox te propone **3 títulos de los que ya tienes guardados** y te dice por qué (duración, tus estrellas, la nota de tu web afín, lo que le gusta a tu grupo, si se va pronto o si la estás viendo).',
+      ['ul',
+        'Las pelis que ya has visto (según tu diario) no se proponen. «En familia» evita el terror y el suspense.',
+        'Si a algún título le falta la duración o las notas, se buscan antes de proponer. «🔄 Otras ideas» saca tres más.'],
+    ],
+  },
+  {
+    id: 'descubrir', title: 'Descubrir (recomendaciones)', icon: 'brujula', blocks: [
+      'Te recomienda títulos que **aún no tienes**: parte de los que has puntuado (los de 4 o 5 estrellas tiran hacia lo parecido y los de 1 o 2 lo apartan) o de los que elijas tú. Los parecidos salen de JustWatch y salen primero los que se repiten entre varios de tus títulos.',
+      ['ul',
+        'Cada recomendación dice «Porque te gustó…» y en qué plataformas está; con «＋ Guardar» va directa a la lista que elijas.',
+        '«Solo lo que puedo ver en mis plataformas» usa las que marcaste en Suscripciones. «✕» la descarta para siempre.'],
+    ],
+  },
+  {
+    id: 'reproducir-en', title: 'Reproducir en otro dispositivo', icon: 'tv', blocks: [
+      'Al pasar el ratón por la carátula de un título sale **«📲 Reproducir en…»**: en este ordenador, en tus dispositivos registrados, en el móvil con un código QR, compartir o copiar el enlace. StreamBox **no envía el vídeo**: le dice al dispositivo que abra ese título en la app oficial de la plataforma, con tu cuenta.',
+      ['ul',
+        '**Tele con Google TV / Android TV / Fire TV**: en Ajustes → Mis dispositivos, «Añadir tele». Activa en la tele las opciones de desarrollador y la depuración, apunta su IP y pulsa «Probar» (la primera vez la tele pregunta si lo permites). Hace falta un pequeño ayudante en el ordenador: ejecuta native-host\\instalar.bat (necesita Node.js; descarga adb de Google si no lo tienes).',
+        '**Móvil o tablet**: «Añadir móvil o tablet», instala la app gratuita ntfy y suscríbete al tema que te da StreamBox. Te llega una notificación; al tocarla se abre el título en la app.'],
+      ['tip', 'Netflix ya no deja enviar desde su app del móvil a las teles con Google TV, y desde el navegador del ordenador ninguna plataforma deja enviar su vídeo: por eso la tele abre el título en su propia app. Si la app de la tele no acepta el enlace directo, StreamBox al menos abre la app.'],
+    ],
+  },
+  {
+    id: 'se-va', title: 'Se va pronto y dónde más está', icon: 'reloj', blocks: [
+      'StreamBox vigila hasta cuándo sigue cada título de tus listas en su plataforma: cada pocos días en Netflix, Prime Video y Movistar Plus+, y en cualquier plataforma cuando abres una ficha que lo indica («Último día para verla…»).',
+      ['ul',
+        'Las tarjetas muestran «⏳ 5 días» (en rojo si quedan 7 o menos) y «¿Qué veo esta noche?» tiene la lista completa de lo que se va.',
+        'Te llega un **aviso de escritorio** 7 días antes (se puede desactivar en Ajustes → Avisos).',
+        '**Dónde más está**: en «Info» y en «Se va pronto» ves en qué otras plataformas de suscripción está cada título (según JustWatch) con enlace directo.'],
+    ],
+  },
+  {
+    id: 'diario', title: 'Mi diario, tu resumen y tu web afín', icon: 'grafica', blocks: [
+      'Mientras reproduces algo, StreamBox apunta los minutos de cada título y los episodios (solo en tu navegador). En **Mi diario** ves horas, títulos, rachas, reparto por plataforma y género, lo que más has visto y un calendario de actividad.',
+      ['ul',
+        '**✨ Tu resumen del año**: tarjetas a pantalla completa con tus horas, tu plataforma, tu título y tu género del año.',
+        '**¿A qué web se parece tu gusto?**: compara tus estrellas con FilmAffinity, IMDb y Rotten Tomatoes. Con la más parecida puedes ordenar cualquier lista con «Según tu web afín».'],
+    ],
+  },
+  {
+    id: 'maraton', title: 'Maratones', icon: 'rayo', blocks: [
+      'En la **Cola**, «＋ Nuevo maratón»: eliges una serie, los episodios que te quedan y hasta cuándo quieres terminarla. StreamBox reparte los episodios por días, te dice si vas al día, adelantado o atrasado (según lo que ves), y «▶ Ver los de hoy» pone en la cola los episodios que tocan y la arranca.',
+    ],
+  },
+  {
+    id: 'suscripciones', title: 'Suscripciones', icon: 'dinero', blocks: [
+      'Marca qué plataformas tienes y su precio. StreamBox calcula cuántas horas tienes pendientes en cada una, cuántas has visto en los últimos 60 días y **cuánto te cuesta cada hora vista**, y te aconseja (darte de baja, activarla un mes, el día de un estreno que sigues…).',
+      'El **plan de rotación** propone una plataforma por mes según lo que tienes pendiente y tu ritmo, con lo que te ahorrarías frente a tenerlas todas.',
+    ],
+  },
+  {
+    id: 'marcadores', title: 'Marcadores', icon: 'marcador', blocks: [
+      'Mientras ves algo, abre el menú de StreamBox en el reproductor: el vídeo se pausa en ese momento. Afina con −10s/−1s/+1s/+10s (o mueve la barra del reproductor: la hora del botón se actualiza) y pulsa **«🔖 Marcar»** (con una nota si quieres); al cerrar el menú sigue reproduciéndose. En **Marcadores** los tienes todos; «▶ Ir» abre el título y salta a ese segundo.',
+    ],
+  },
+  {
+    id: 'compartir', title: 'Listas compartidas', icon: 'grupo', blocks: [
+      'En una lista, **«👥 Compartir»** te da un código para mandar a quien quieras. Esa persona lo pega en «📥 Importar lista compartida» (barra lateral), puntúa con estrellas y te devuelve su código: al importarlo, cada título muestra los votos de todos y la media, puedes ordenar por «Votos del grupo» y «¿Qué veo esta noche?» tiene en cuenta lo que le gusta al grupo.',
+      ['tip', 'No hay servidor: los códigos viajan por donde queráis. Cada vez que alguien puntúe, que vuelva a mandar su código para actualizar sus votos.'],
+    ],
+  },
+  {
+    id: 'juntos', title: 'Ver juntos', icon: 'grupo', blocks: [
+      'Para ver lo mismo cada uno en su casa: en el reproductor, menú de StreamBox → **«👥 Ver juntos»**. Uno pulsa «Crear invitación» y se la manda al otro; el otro la pega, pulsa «Unirme» y devuelve la respuesta; el primero la pega y pulsa «Conectar».',
+      ['ul',
+        'Desde ese momento, play, pausa y saltos van sincronizados, y podéis mandaros reacciones (😂 😱 ❤️…).',
+        'Si uno cambia de episodio, al otro le aparece «Ir a lo mismo».'],
+      ['tip', 'La conexión es directa entre los dos navegadores, sin servidores de StreamBox. Algunas redes muy cerradas (de empresa, por ejemplo) pueden bloquearla. Cada uno necesita su propia cuenta en la plataforma.'],
     ],
   },
   {
@@ -96,6 +202,7 @@ const SB_HELP = [
         '**Netflix**: miniaturas de todas las filas, búsqueda y «Mi lista», vista previa, ficha, cartel de la portada y reproductor.',
         '**Prime Video** (primevideo.com y Amazon en /gp/video): miniaturas, ficha y reproductor.',
         '**Disney+**: miniaturas, ficha y reproductor. Como Disney+ no dice en el reproductor qué título es, StreamBox lo reconoce por la última ficha que abriste en esa pestaña o por su nombre. En la cola, los títulos de Disney+ abren su ficha y StreamBox pulsa «Reproducir» por ti (sigue la serie por donde ibas).',
+        '**Movistar Plus+** (ver.movistarplus.es): miniaturas, ficha y reproductor. En las miniaturas de un episodio se guarda su serie. En la cola, StreamBox abre la ficha y pulsa «Ver ahora» por ti.',
         '**Próximamente**: Max.'],
       'En Ajustes → «En las plataformas» puedes desactivar el botón de las miniaturas o una plataforma entera.',
       ['tip', 'Las plataformas cambian su web a menudo. Si un botón deja de salir, recarga la página; si sigue sin salir, la plataforma ha cambiado algo y StreamBox necesita una actualización.'],

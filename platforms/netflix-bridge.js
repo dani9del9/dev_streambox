@@ -23,6 +23,13 @@
       img: findUrl(v.boxarts) || findUrl(v.boxArt) || '',
     };
   }
+  // Seguimiento: temporadas y episodios que la web ya tiene en su caché
+  function follow(pid) {
+    const cache = window.netflix && window.netflix.falcorCache;
+    const v = cache && cache.videos && cache.videos[pid];
+    if (!v) return null;
+    return { seasons: +val(v.seasonCount) || 0, episodes: +val(v.episodeCount) || 0 };
+  }
   // Serie (o peli) a la que pertenece un episodio: API de metadatos que usa la propia web
   function buildId() {
     const n = window.netflix || {};
@@ -41,10 +48,34 @@
     const art = [].concat(v.boxart || [], v.artwork || [], v.storyart || []).find(a => a && a.url);
     return { pid: String(v.id), title: v.title || '', type: v.type === 'show' ? 'series' : v.type === 'movie' ? 'movie' : '', year: String(v.year || ''), img: art ? art.url : '' };
   }
+  // Control del reproductor (para los marcadores y «Ver juntos»): Netflix no deja mover el vídeo a mano,
+  // hay que usar su propio reproductor
+  function nfPlayer() {
+    try {
+      const vp = window.netflix.appContext.state.playerApp.getAPI().videoPlayer;
+      const id = vp.getAllPlayerSessionIds().find(s => /watch/.test(s)) || vp.getAllPlayerSessionIds()[0];
+      return id ? vp.getVideoPlayerBySessionId(id) : null;
+    } catch { return null; }
+  }
+  function control(d) {
+    const p = nfPlayer();
+    if (!p) return null;
+    if (d.op === 'seek') p.seek(Math.max(0, Math.round(d.t * 1000)));
+    else if (d.op === 'play') p.play();
+    else if (d.op === 'pause') p.pause();
+    return { ok: 1, t: p.getCurrentTime() / 1000, paused: p.isPaused() };
+  }
   window.addEventListener('message', async e => {
     if (e.source !== window || !e.data || !/^nf-/.test(e.data.sbReq || '')) return;
     let data = null;
-    try { data = e.data.sbReq === 'nf-ping' ? { ok: 1 } : e.data.sbReq === 'nf-show' ? await show(String(e.data.pid)) : meta(String(e.data.pid)); } catch {}
+    try {
+      const pid = String(e.data.pid);
+      if (e.data.sbReq === 'nf-ping') data = { ok: 1 };
+      else if (e.data.sbReq === 'nf-show') data = await show(pid);
+      else if (e.data.sbReq === 'nf-follow') data = follow(pid);
+      else if (e.data.sbReq === 'nf-ctl') data = control(e.data.extra || {});
+      else data = meta(pid);
+    } catch {}
     window.postMessage({ sbRes: e.data.id, data }, location.origin);
   });
 })();

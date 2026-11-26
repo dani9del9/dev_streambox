@@ -22,12 +22,76 @@
     }
     if (!out.type && /"seasonNumber"|data-automation-id="ep-/.test(html)) out.type = 'series';
     if (!out.year) out.year = (html.match(/data-automation-id="release-year-badge"[^>]*>\s*(\d{4})/) || [])[1] || '';
+    // Géneros: en los datos de la página («genres»:[{ "id":"av_genre_comedy", "text":"Comedia" }…]) o en los enlaces de la ficha
+    const g = [];
+    const js = html.match(/"genres"\s*:\s*\[([^\]]*)\]/);
+    if (js) for (const o of js[1].matchAll(/\{[^{}]*\}|"([^"]+)"/g)) {
+      if (o[1]) { g.push(o[1]); continue; }
+      const f = k => (o[0].match(new RegExp('"' + k + '"\\s*:\\s*"([^"]+)"')) || [])[1];
+      const v = f('text') || f('displayName') || f('name') || f('id');
+      if (v) g.push(v);
+    }
+    for (const m of html.matchAll(/data-testid="genresMetadata"[\s\S]{0,1200}?<\/div>/g)) g.push(...m[0].replace(/<[^>]+>/g, ',').split(','));
+    out.genres = SB.cleanGenres(out.genres.concat(g).filter(x => !/^\s*(•|,)?\s*$/.test(x)));
     return out;
   }
   async function fetchMeta(pid, fetchFn = fetch) {
     const res = await fetchFn(titleUrl(pid), { credentials: 'include' });
     if (!res.ok) throw new Error('Prime Video ' + res.status);
     return parseMeta(await res.text());
+  }
+
+  // «Se va pronto»: si la página del título dice hasta cuándo está disponible
+  async function leavingCheck(pid, t, fetchFn = fetch) {
+    const res = await fetchFn(titleUrl(pid), { credentials: 'include' });
+    if (!res.ok) return 0;
+    const html = await res.text();
+    return SB.leavingFromText(html.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<[^>]+>/g, '\n'));
+  }
+
+  // ---------- Seguimiento: temporadas y episodios (sirve también en segundo plano: solo texto, sin DOM) ----------
+  // En la ficha: el selector de temporadas (enlaces a la ficha de cada una) y la lista de episodios con su fecha
+  function parseSeasons(html) {
+    const out = [];
+    const i = html.indexOf('data-testid="dp-season-selector"');
+    if (i < 0) return out;
+    const block = html.slice(i, i + 60000);
+    for (const m of block.matchAll(/<a\b[^>]*href="([^"]*\/detail\/[^"]+)"[^>]*>([\s\S]*?)<\/a>/g)) {
+      const label = SB.decodeEntities(m[2].replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
+      if (label && !out.some(x => x.label === label)) out.push({ href: SB.decodeEntities(m[1]), label });
+    }
+    return out;
+  }
+  function parseEpisodes(html) {
+    const eps = [];
+    const parts = html.split('data-testid="episode-list-item"').slice(1);
+    for (const p of parts) {
+      const seg = p.slice(0, 40000);
+      const num = (seg.replace(/<[^>]+>/g, ' ').match(/>?\s(\d{1,3})\.\s/) || [])[1];
+      const date = (seg.match(/data-testid="episode-release-date"[^>]*>([^<]+)</) || [])[1];
+      eps.push({ n: num ? +num : eps.length + 1, date: date ? SB.parseDate(date) : 0 });
+    }
+    return eps;
+  }
+  async function followCheck(pid, t, fetchFn = fetch) {
+    const base = 'https://www.primevideo.com';
+    const get = async url => { const r = await fetchFn(url, { credentials: 'include' }); if (!r.ok) throw new Error('Prime Video ' + r.status); return r.text(); };
+    let html = await get(titleUrl(pid));
+    const seasons = parseSeasons(html);
+    // La última temporada (la del final del selector) tiene su propia ficha
+    const last = seasons[seasons.length - 1];
+    if (last) {
+      const lp = parseUrl(new URL(last.href, base).href);
+      if (lp && lp !== pid) html = await get(titleUrl(lp));
+    }
+    const eps = parseEpisodes(html);
+    if (!eps.length && !seasons.length) return null;
+    const now = Date.now() + 86400000; // un día de margen por la zona horaria
+    const out = eps.filter(e => !e.date || e.date <= now);
+    const future = eps.filter(e => e.date && e.date > now).map(e => e.date).sort((a, b) => a - b);
+    const latest = Math.max(0, ...out.map(e => e.date || 0));
+    const label = last ? last.label : 'T1';
+    return { seasons: seasons.length || 1, season: label, lastSeason: label, episodes: out.length, latest: latest || 0, next: future[0] || 0 };
   }
 
   // ---------- Solo dentro de Prime Video ----------
@@ -45,14 +109,6 @@
     const seg = m && m[1].split('/').find(x => x && !/^[A-Z0-9]{10,}$/.test(x) && !/^ref=/.test(x));
     return seg ? decodeURIComponent(seg).replace(/[-_]+/g, ' ').trim() : '';
   }
-  // El botón va en la caja de la imagen (no en la tarjeta, que crece al pasar el ratón)
-  function imgBox(img, stop) {
-    let el = img.parentElement;
-    if (el && el.tagName === 'PICTURE') el = el.parentElement;
-    if (el && getComputedStyle(el).display === 'inline' && el.parentElement) el = el.parentElement;
-    return el && stop.contains(el) ? el : stop;
-  }
-
   function cards(root = document) {
     const out = [], seen = new Set();
     for (const a of $$('a[href*="/detail/"], a[href*="/gp/video/detail/"]', root)) {
@@ -67,12 +123,19 @@
       const tEl = $('[data-testid*="title"], [data-automation-id*="title"], h2, h3', card);
       const title = (dc && dc.getAttribute('data-card-title')) || a.getAttribute('aria-label') || img.alt || slugTitle(a.getAttribute('href')) || (tEl ? tEl.textContent : '');
       const et = (dc && dc.getAttribute('data-card-entity-type')) || card.getAttribute('data-card-entity-type');
-      out.push({ el: imgBox(img, card), pid, title: title.trim(), img: goodImg(img), url: cleanUrl(a.getAttribute('href')), type: typeOf(et), year: '' });
+      out.push({ el: card, imgEl: img, pid, title: title.trim(), img: goodImg(img), url: cleanUrl(a.getAttribute('href')), type: typeOf(et), year: '' });
     }
     return out;
   }
 
-  const currentPagePid = () => /\/detail\//.test(location.pathname) ? parseUrl(location.href) : null;
+  // Enlaces con «?gti=…» (los de JustWatch o StreamBox → Descubrir): la ficha de verdad está en el «canonical»
+  const currentPagePid = () => {
+    if (!/\/detail/.test(location.pathname)) return null;
+    const pid = parseUrl(location.href);
+    if (pid) return pid;
+    const c = document.querySelector('link[rel="canonical"]');
+    return c ? parseUrl(c.href) : null;
+  };
 
   function pageInfo(pid) {
     const tImg = $('[data-testid="title-art"] img, [data-automation-id="title-art"] img');
@@ -84,18 +147,24 @@
     if (!type && ($('[data-testid="dp-season-selector"], [data-automation-id*="season"], [data-testid*="episode"], #tab-content-episodes') || /\b(T|S)\d+\s*E\d+/.test(play ? play.textContent : ''))) type = 'series';
     const og = (document.querySelector('meta[property="og:image"]') || {}).content || '';
     const bg = $('[data-testid="base-image"] img, [data-automation-id="hero-background"] img, picture img');
+    const genres = $$('[data-testid="genresMetadata"] a, [data-testid*="genre"] a, [data-automation-id*="genre"] a').map(a => a.textContent);
     return {
       pid, title: (tImg && tImg.alt) || (h1 && h1.textContent.trim()) || SB.cleanTitle(document.title),
       type, year: ((yearEl ? yearEl.textContent : '').match(/\d{4}/) || [''])[0], img: og || goodImg(bg), url: cleanUrl(location.href),
+      genres: SB.cleanGenres(genres),
     };
   }
 
   // Fila de botones redondos de la ficha (tráiler, lista, me gusta, compartir…): al menos 3 botones
   // cuadrados del mismo tamaño en la parte de arriba a la izquierda
   function roundRow() {
+    // Solo cerca del botón «Reproducir» y fuera de las filas de carátulas
+    const play = $('[data-testid="dp-atf-play-button"], [data-automation-id="play-button"], [data-testid*="play-button"]');
+    const pr = play && play.getBoundingClientRect();
     const round = $$('button, a[role="button"]').filter(b => {
-      if (b.closest('.sb-ui')) return false;
+      if (b.closest('.sb-ui, li, article, [data-testid*="carousel"], ' + PLAYER)) return false;
       const r = b.getBoundingClientRect();
+      if (pr && pr.width && Math.abs(r.top - pr.top) > 260) return false;
       return r.width >= 32 && r.width <= 72 && Math.abs(r.width - r.height) <= 6 && r.top > 0 && r.top < innerHeight && r.left < innerWidth * 0.7;
     });
     for (const b of round) {
@@ -134,7 +203,7 @@
         const info = Object.assign(pageInfo(pid), {});
         const name = $('[class*="atvwebplayersdk-title-text"]', box);
         if (name && name.textContent.trim()) info.title = name.textContent.trim();
-        out.push({ root: box, kind: 'player', info, slot: Object.assign(slot, { cls: 'sb-prime-player' }) });
+        out.push({ root: box, kind: 'player', info, slot: Object.assign(slot, { mimic: slot.before !== fs, size: Math.round(fs.getBoundingClientRect().height) || 36 }) });
       }
       return out;
     }
@@ -154,6 +223,7 @@
 
   // Reproductor: «Omitir introducción» y «Omitir resumen» son el mismo botón con distinto texto
   const player = {
+    title: () => ['.atvwebplayersdk-title-text', '.atvwebplayersdk-subtitle-text'].map(s => { const e = document.querySelector(s); return e && e.textContent.trim(); }).filter(Boolean).join(' · '),
     active: playerActive,
     skipIntro: { generic: '[class*="skipelement"]', text: /intro|apertura|opening|abertura|vorspann/i },
     skipRecap: { generic: '[class*="skipelement"]', text: /resumen|recap|resumo|previously|anteriormente|rückblick/i },
@@ -173,7 +243,7 @@
 
   SBP.register({
     id: 'prime', name: 'Prime Video', short: 'prime', color: '#00a8e1', hosts: HOSTS,
-    parseUrl, titleUrl, watchUrl, fetchMeta, parseMeta, cards, spots, enrich, player,
+    parseUrl, titleUrl, watchUrl, fetchMeta, parseMeta, cards, spots, enrich, player, followCheck, leavingCheck,
     dark: () => true,
   });
 })();

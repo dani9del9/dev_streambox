@@ -9,16 +9,30 @@
 <aside id="side">
   <div class="brand"><span class="brand-logo"></span> <span>StreamBox</span></div>
   <button id="newList" class="primary wide" data-i18n="+ Nueva lista">+ Nueva lista</button>
+  <button id="importShared" class="linkish side-import" data-i18n="📥 Importar lista compartida">📥 Importar lista compartida</button>
   <div id="listList"></div>
   <nav class="side-nav">
-    <button data-view="queue" data-i18n="Cola de reproducción"><span class="nav-ico" data-ico="play"></span> Cola de reproducción</button>
-    <button data-view="all" data-i18n="Todos los títulos"><span class="nav-ico" data-ico="cuadricula"></span> Todos los títulos</button>
     <button data-view="help" data-i18n="Ayuda"><span class="nav-ico" data-ico="ayuda"></span> Ayuda</button>
     <button data-view="settings" data-i18n="Ajustes"><span class="nav-ico" data-ico="engranaje"></span> Ajustes</button>
   </nav>
 </aside>
 
 <main id="main"></main>
+
+<aside id="tools">
+  <div class="tools-title" data-i18n="Herramientas">Herramientas</div>
+  <nav class="side-nav">
+    <button data-view="tonight" class="featured" data-i18n="¿Qué veo esta noche?"><span class="nav-ico" data-ico="palomitas"></span> ¿Qué veo esta noche?</button>
+    <button data-view="discover" data-i18n="Descubrir"><span class="nav-ico" data-ico="brujula"></span> Descubrir</button>
+    <button data-view="follow" data-i18n="Siguiendo"><span class="nav-ico" data-ico="campana"></span> Siguiendo</button>
+    <button data-view="queue" data-i18n="Cola de reproducción"><span class="nav-ico" data-ico="play"></span> Cola de reproducción</button>
+    <button data-view="all" data-i18n="Todos los títulos"><span class="nav-ico" data-ico="cuadricula"></span> Todos los títulos</button>
+    <div class="tools-sep"></div>
+    <button data-view="stats" data-i18n="Mi diario"><span class="nav-ico" data-ico="grafica"></span> Mi diario</button>
+    <button data-view="bookmarks" data-i18n="Marcadores"><span class="nav-ico" data-ico="marcador"></span> Marcadores</button>
+    <button data-view="subs" data-i18n="Suscripciones"><span class="nav-ico" data-ico="dinero"></span> Suscripciones</button>
+  </nav>
+</aside>
 
 <!-- Selector de iconos -->
 <div id="picker" class="modal hidden">
@@ -63,6 +77,16 @@
 <script src="platforms/netflix.js"></script>
 <script src="platforms/prime.js"></script>
 <script src="platforms/disney.js"></script>
+<script src="platforms/movistar.js"></script>
+<script src="info.js"></script>
+<script src="manager-stats.js"></script>
+<script src="manager-tonight.js"></script>
+<script src="manager-plan.js"></script>
+<script src="manager-share.js"></script>
+<script src="manager-discover.js"></script>
+<script src="qr.js"></script>
+<script src="manager-cast.js"></script>
+<script src="manager-devices.js"></script>
 <script src="help.js"></script>
 <script src="manager.js"></script>
 </body>

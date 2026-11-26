@@ -4,9 +4,9 @@
 .sb-icon{font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif}
 
 /* Botón sobre las miniaturas */
-.sb-cardbtn{position:absolute;top:6px;right:6px;z-index:6;display:inline-flex;align-items:center;gap:3px;height:28px;min-width:28px;padding:0 6px;border-radius:14px;border:1px solid rgba(255,255,255,.25);background:rgba(20,18,22,.78);color:#fff;cursor:pointer;opacity:0;transform:scale(.92);transition:opacity .15s,transform .15s;backdrop-filter:blur(4px);font-size:14px;line-height:1}
+.sb-cardbtn{position:absolute;top:6px;right:6px;z-index:60;display:inline-flex;align-items:center;gap:3px;height:28px;min-width:28px;padding:0 6px;border-radius:14px;border:1px solid rgba(255,255,255,.25);background:rgba(20,18,22,.78);color:#fff;cursor:pointer;opacity:0;transform:scale(.92);transition:opacity .15s,transform .15s;backdrop-filter:blur(4px);font-size:14px;line-height:1}
 .sb-cardbtn.on{opacity:1;transform:none}
-*:hover>.sb-cardbtn,.sb-cardbtn:focus-visible{opacity:1;transform:none}
+*:hover>.sb-cardbtn,.sb-cardbtn.sb-hov,.sb-cardbtn:focus-visible{opacity:1;transform:none}
 .sb-cardbtn:hover{border-color:var(--sb-acc);box-shadow:0 0 0 2px var(--sb-acc)}
 .sb-btn-plus{font-weight:700;font-size:16px;margin-left:1px;background:var(--sb-grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 .sb-btn-icons{display:inline-flex;gap:2px}
@@ -65,17 +65,11 @@
 .sb-qnext-txt{min-width:0;flex:1}
 .sb-qnext-txt small{color:var(--sb-mut);font-size:12px}
 .sb-qnext-name{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
-#sb-qbar{position:fixed;top:16px;left:50%;transform:translate(-50%,-8px);z-index:2147483400;display:flex;align-items:center;gap:10px;padding:6px 8px 6px 12px;border-radius:20px;background:rgba(20,18,22,.82);color:#fff;font-size:13px;backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.15);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
+#sb-qbar{position:fixed;top:16px;left:50%;transform:translate(-50%,-8px);z-index:2147483400;display:flex;flex-direction:column;align-items:stretch;gap:0;padding:6px 8px 6px 12px;border-radius:20px;max-width:min(560px,92vw);background:rgba(20,18,22,.82);color:#fff;font-size:13px;backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.15);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
 #sb-qbar.show{opacity:1;pointer-events:auto;transform:translate(-50%,0)}
 #sb-qbar .sb-qbtn{height:26px;padding:0 9px;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:#fff}
 .sb-qbar-next{color:rgba(255,255,255,.7);max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* Botón dentro de los controles del reproductor */
-.sb-inlinebtn.sb-player{height:44px;min-width:44px;padding:0 10px;margin:0 8px;border:0;border-radius:22px;background:rgba(255,255,255,.08);align-self:center}
-.sb-inlinebtn.sb-player:hover{background:rgba(255,255,255,.2);transform:scale(1.08)}
-.sb-inlinebtn.sb-player.on{background:rgba(255,255,255,.12);box-shadow:none}
-.sb-inlinebtn.sb-player .sb-logo{width:26px;height:26px}
-.sb-inlinebtn.sb-player .sb-btn-plus{font-size:20px}
 
 /* Notas */
 .sb-menu-extras{border-top:1px solid var(--sb-line);padding-bottom:4px}
@@ -93,4 +87,86 @@
 .sb-inlinebtn.sb-round .sb-btn-plus{display:none}
 .sb-inlinebtn.sb-round .sb-btn-icons .sb-icon{width:22px!important;height:22px!important;flex-basis:22px!important}
 .sb-inlinebtn.sb-round .sb-btn-icons .sb-icon~.sb-icon,.sb-inlinebtn.sb-round .sb-btn-more{display:none}
-.sb-inlinebtn.sb-prime-player{height:40px;min-width:40px;padding:0 8px;margin:0 6px;background:rgba(255,255,255,.08)}
+
+
+/* Botón dentro del reproductor: nuestro logo de colores, centrado como los iconos de la web */
+.sb-wrap{display:flex;align-items:center;justify-content:center}
+.sb-inlinebtn.sb-player{display:flex;align-items:center;justify-content:center;flex:0 0 auto;padding:0;margin:0;gap:0;border:0;border-radius:50%;background:transparent;box-shadow:none;line-height:0;transition:transform .15s ease,background .15s}
+.sb-inlinebtn.sb-player:hover{background:rgba(255,255,255,.12);transform:scale(1.12)}
+.sb-inlinebtn.sb-player.on{background:transparent;box-shadow:none}
+.sb-inlinebtn.sb-player.on:hover{background:rgba(255,255,255,.12)}
+.sb-pl-ico{position:relative;display:block;line-height:0}
+.sb-pl-ico .sb-logo{display:block;width:100%;height:100%;filter:drop-shadow(0 1px 3px rgba(0,0,0,.55))}
+.sb-pl-check{position:absolute;right:-12%;bottom:-10%;width:46%;height:46%;min-width:13px;min-height:13px;border-radius:50%;background:var(--sb-grad);color:#fff;font:900 10px/1 Arial,sans-serif;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px rgba(0,0,0,.75)}
+
+/* Nueva lista: debajo de las listas, con su botón «Crear» */
+.sb-menu-newrow{display:flex;gap:8px;align-items:center;padding:6px 12px 8px;border-top:1px solid var(--sb-line)}
+.sb-menu-newrow .sb-menu-new{flex:1;width:auto;margin:0;min-width:0}
+.sb-menu-create{height:36px;padding:0 14px;flex:0 0 auto}
+.sb-menu-create:disabled{opacity:.4;cursor:default;filter:grayscale(.6)}
+
+/* Cola desplegada en la barra del reproductor: discreta, filas pequeñas */
+.sb-qbar-row{display:flex;align-items:center;gap:10px;white-space:nowrap}
+#sb-qbar.open{border-radius:16px;padding-bottom:8px}
+.sb-qbar-toggle{min-width:26px;padding:0 6px!important}
+.sb-qbar-list{list-style:none;margin:8px 0 0;padding:6px 0 0;border-top:1px solid rgba(255,255,255,.12);max-height:min(46vh,340px);overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:2px;font-size:12px}
+.sb-qbar-list li{display:flex;align-items:center;gap:8px;padding:3px 6px;border-radius:8px;color:rgba(255,255,255,.85);min-width:0}
+.sb-qbar-list li.now{background:rgba(255,255,255,.1);color:#fff;font-weight:600}
+.sb-qbar-list li.done{opacity:.45;filter:grayscale(1)}
+.sb-qbar-list .n{width:16px;text-align:center;color:rgba(255,255,255,.55);font-size:11px;flex:0 0 16px}
+.sb-qbar-list li.now .n{color:var(--sb-acc)}
+.sb-qbar-list img,.sb-qbar-list .ph{width:38px;height:21px;object-fit:cover;border-radius:3px;flex:0 0 38px;background:rgba(255,255,255,.12)}
+.sb-qbar-list .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-qbar-list small{color:rgba(255,255,255,.5);font-size:11px;flex:0 0 auto}
+.sb-qbar-list .sb-pbadge.small{height:15px;min-width:15px;font-size:9px;padding:0 4px}
+
+/* Menú: más aire en la parte de abajo */
+#sb-menu{padding-bottom:4px}
+.sb-menu-queue{padding:10px 12px 12px;gap:8px}
+.sb-menu-foot{margin-top:2px;padding:11px 16px 9px}
+
+/* Movistar Plus+ */
+.sb-inlinebtn.sb-mplus{height:50px;border-radius:4px;margin:0 0 0 14px;padding:0 18px;border-color:rgba(255,255,255,.3);background:rgba(60,60,60,.8)}
+.pyr-btn-video.sb-wrap>.sb-inlinebtn.sb-player{margin:0}
+.sb-inlinebtn.sb-mplus.on{background:var(--sb-grad);border-color:transparent}
+
+/* Marcadores y «Ver juntos» en el menú del reproductor */
+.sb-menu-bm{display:flex;flex-direction:column;gap:8px;margin:8px 12px 0;padding:10px 0 2px;border-top:1px solid var(--sb-line)}
+.sb-bm-row{display:flex;gap:6px;align-items:center}
+.sb-bm-nudges{flex-wrap:wrap}
+.sb-bm-nudge{min-width:46px;justify-content:center;font-variant-numeric:tabular-nums}
+.sb-bm-resume{margin-left:auto}
+.sb-bm-note{flex:1;min-width:0;height:32px;padding:0 10px;border-radius:8px;border:1px solid var(--sb-line);background:var(--sb-bg);color:inherit;font:inherit;font-size:13px;outline:none}
+.sb-bm-note:focus{border-color:var(--sb-acc)}
+.sb-menu-bm > .sb-qbtn{align-self:flex-start}
+
+/* Ver juntos */
+.sb-party{position:fixed;right:24px;top:80px;z-index:2147483640;width:340px;max-height:80vh;overflow:auto;background:var(--sb-panel);color:var(--sb-txt);border:1px solid var(--sb-line);border-radius:16px;box-shadow:0 16px 44px rgba(0,0,0,.5);font-size:14px;line-height:1.4;text-align:left}
+.sb-party-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 6px}
+.sb-party-head b{font-size:15px}
+.sb-x{background:none;border:0;color:var(--sb-mut);font-size:16px;cursor:pointer}
+.sb-party-body{display:flex;flex-direction:column;gap:8px;padding:4px 14px 14px}
+.sb-party-body p{margin:0}
+.sb-party-body .sb-qbtn{align-self:flex-start}
+.sb-party-code{width:100%;box-sizing:border-box;font:11.5px/1.35 ui-monospace,Consolas,monospace;padding:8px 10px;border-radius:9px;border:1px solid var(--sb-line);background:var(--sb-bg);color:inherit;resize:vertical;word-break:break-all;outline:none}
+.sb-party-code:focus{border-color:var(--sb-acc)}
+.sb-party-msg{color:var(--sb-mut);font-size:13px}
+.sb-party-note{color:var(--sb-mut);font-size:12px}
+.sb-party-link{color:var(--sb-acc)}
+.sb-party-reacts{display:flex;gap:6px;flex-wrap:wrap}
+.sb-party-reacts button{font-size:22px;background:var(--sb-panel2);border:1px solid var(--sb-line);border-radius:12px;width:44px;height:40px;cursor:pointer}
+.sb-party-reacts button:hover{border-color:var(--sb-acc)}
+#sb-party-pill{position:fixed;left:20px;top:20px;z-index:2147483630;padding:7px 14px;border-radius:18px;border:0;background:var(--sb-grad);color:#fff;font:700 13px/1 inherit;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.35);opacity:.92}
+.sb-react{position:fixed;bottom:90px;z-index:2147483645;font-size:46px;pointer-events:none;animation:sb-float 2.6s ease-out forwards}
+@keyframes sb-float{0%{transform:translateY(0) scale(.6);opacity:0}15%{opacity:1;transform:translateY(-30px) scale(1.1)}100%{transform:translateY(-320px) scale(1);opacity:0}}
+.sb-party-goto{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);z-index:2147483646;display:flex;align-items:center;gap:10px;background:var(--sb-panel);color:var(--sb-txt);border:1px solid var(--sb-line);padding:10px 14px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.45);font-size:14px}
+
+#sb-casthint{position:fixed;top:14px;right:18px;z-index:2147483646;max-width:340px;padding:14px 16px 12px;border-radius:14px;background:#1d1b22;color:#fff;font:14px/1.45 system-ui,sans-serif;box-shadow:0 12px 40px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);transition:opacity .5s}
+#sb-casthint.out{opacity:0}
+#sb-casthint b{display:block;font-size:15px;margin-bottom:6px}
+#sb-casthint ol{margin:0 0 8px;padding-left:20px}
+#sb-casthint li{margin:3px 0}
+#sb-casthint small{display:block;opacity:.7;margin-bottom:10px}
+#sb-casthint .sb-qbtn{float:right}
+#sb-casthint .sb-ch-arrow{position:absolute;top:-6px;right:6px;font-size:34px;line-height:1;color:#ff6347;animation:sb-ch-bob 1s ease-in-out infinite;text-shadow:0 2px 8px rgba(0,0,0,.6)}
+@keyframes sb-ch-bob{50%{transform:translate(4px,-4px)}}

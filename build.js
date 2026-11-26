@@ -22,7 +22,7 @@ const INCLUDE = name => /\.(js|css|html|json|png)$/.test(name) && !['build.js', 
 function listFiles(dir = ROOT, base = '') {
   const out = [];
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (e.name.startsWith('.') || ['dist', 'node_modules'].includes(e.name)) continue;
+    if (e.name.startsWith('.') || ['dist', 'node_modules', 'native-host'].includes(e.name)) continue;
     const rel = base ? base + '/' + e.name : e.name;
     if (e.isDirectory()) out.push(...listFiles(path.join(dir, e.name), rel));
     else if (INCLUDE(e.name)) out.push(rel);
@@ -33,7 +33,8 @@ function listFiles(dir = ROOT, base = '') {
 // Manifiesto de Firefox: script de fondo en vez de service worker, options_ui e id de Gecko
 function firefoxManifest(m) {
   const f = JSON.parse(JSON.stringify(m));
-  f.background = { scripts: [m.background.service_worker] };
+  // Firefox: página de fondo con los mismos scripts que el service worker carga con importScripts
+  f.background = { scripts: ['i18n.js', 'i18n-en.js', 'i18n-gl.js', 'common.js', 'platforms/netflix.js', 'platforms/prime.js', 'platforms/disney.js', 'platforms/movistar.js', 'info.js', m.background.service_worker] };
   if (f.options_page) { f.options_ui = { page: f.options_page, open_in_tab: true }; delete f.options_page; }
   f.browser_specific_settings = {
     gecko: {

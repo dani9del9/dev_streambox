@@ -25,6 +25,15 @@
   const isPlayer = () => /\/(video|play)\//.test(location.pathname);
   const currentPagePid = () => isPlayer() ? null : parseUrl(location.pathname);
 
+  // La imagen buena de la tarjeta: la más grande que no sea el sello de edad («6+», «12+»…)
+  function bestImg(card) {
+    const imgs = $$('img', card).filter(i => !SB.badTitle(i.alt));
+    if (!imgs.length) return null;
+    const area = i => { const r = i.getBoundingClientRect(); return (r.width * r.height) || (i.naturalWidth * i.naturalHeight) || 0; };
+    const big = imgs.filter(i => { const r = i.getBoundingClientRect(); return r.width >= 80 || i.naturalWidth >= 120; });
+    return (big.length ? big : imgs).sort((a, b) => area(b) - area(a))[0];
+  }
+
   function cards(root = document) {
     if (isPlayer()) return [];
     const out = [], seen = new Set();
@@ -34,12 +43,13 @@
       const pid = parseUrl(href);
       if (!pid || pid === currentPagePid()) continue;
       const card = a.closest('[data-testid="set-item"], [data-item-id], li, article') || a;
-      const img = $('img', card);
+      const img = bestImg(card);
       if (!img || seen.has(card)) continue;
       seen.add(card);
       // La etiqueta accesible suele ser «Título. Película. …»: nos quedamos con la primera parte
       const aria = (a.getAttribute('aria-label') || '').split(/\.\s|,\s/)[0];
-      out.push({ el: card, pid, title: (img.alt || aria || '').trim(), img: goodImg(img), url: cleanUrl(href), type: legacyType(href), year: '' });
+      const title = [img.alt, aria, a.getAttribute('title')].map(x => SB.stripNoise(x)).find(x => x && !SB.badTitle(x)) || '';
+      out.push({ el: card, pid, title, img: goodImg(img), url: cleanUrl(href), type: legacyType(href), year: '' });
     }
     return out;
   }
@@ -53,9 +63,12 @@
     if (!type && $$('[role="tab"], button').some(b => /^(episodios|episodes|episodes|épisodes)$/i.test(b.textContent.trim()))) type = 'series';
     const og = (document.querySelector('meta[property="og:image"]') || {}).content || '';
     const bg = $('[data-testid="background-image"] img, [data-testid*="hero"] img, picture img');
+    // Géneros: los trozos de la línea de datos («2021 • 2 temporadas • Ciencia ficción, Aventura») que sean géneros
+    const genres = metaText.split(/[•·|,]/).map(x => x.trim()).filter(x => x && SB.catsFromGenres([x]).length);
     return {
-      pid, title: (logo && logo.alt) || (h1 && h1.textContent.trim()) || SB.cleanTitle(document.title),
+      pid, title: [logo && logo.alt, h1 && h1.textContent.trim(), SB.cleanTitle(document.title)].find(x => x && !SB.badTitle(x)) || '',
       type, year: (metaText.match(/\b(19|20)\d{2}\b/) || [''])[0], img: og || goodImg(bg), url: cleanUrl(location.href),
+      genres: SB.cleanGenres(genres),
     };
   }
 
@@ -89,7 +102,7 @@
     if (isPlayer()) {
       const info = playerInfo(ctx.titles);
       const ref = info && topRightButton();
-      return ref ? [{ root: document.body, kind: 'player', info, slot: { near: ref } }] : [];
+      return ref ? [{ root: document.body, kind: 'player', info, slot: { near: ref, size: Math.round(ref.getBoundingClientRect().height) || 40 } }] : [];
     }
     const pid = currentPagePid();
     if (!pid) return [];
@@ -107,6 +120,7 @@
     return b && re.test(b.textContent + ' ' + (b.getAttribute('aria-label') || '')) ? b : null;
   };
   const player = {
+    title: () => { const s = SB.deepAll('.subtitle-field, [class*="subtitle-field"]').find(e => e.textContent.trim()); return [playerTitle(), s && s.textContent.trim()].filter(Boolean).join(' · '); },
     active: isPlayer,
     skipIntro: { find: skipButton(/intro|introducci|apertura|opening|vorspann/i) },
     skipRecap: { find: skipButton(/resumen|recap|resumo|previously|anteriormente|rückblick/i) },
@@ -125,13 +139,23 @@
     return b && b.getClientRects().length ? b : null;
   }
 
+  // Seguimiento: en la ficha de la serie, la temporada elegida y cuántos episodios tiene
+  async function followObserve(pid) {
+    if (isPlayer() || currentPagePid() !== pid) return null;
+    const n = $$('[data-testid="standard-regular-list-item-title"]').filter(e => /^\s*\d+\./.test(e.textContent)).length;
+    if (!n) return null;
+    const lab = $$('button, [role="button"], [aria-haspopup]').map(b => b.textContent.trim()).find(x => /^(temporada|season|tempada|staffel|saison|stagione)\s*\d+/i.test(x));
+    const opts = $$('[role="option"], [role="menuitem"], li').map(x => x.textContent.trim()).filter(x => /^(temporada|season|tempada|staffel|saison|stagione)\s*\d+$/i.test(x));
+    return { seasons: opts.length || 0, season: lab ? lab.replace(/\s+/g, ' ') : 'T1', episodes: n, lastSeason: lab || '' };
+  }
+
   async function enrich(pid) {
     try { return await fetchMeta(pid); } catch (e) { console.warn('[StreamBox] Disney+', pid, e); return {}; }
   }
 
   SBP.register({
     id: 'disney', name: 'Disney+', short: 'D+', color: '#0e47a1', hosts: ['disneyplus.com'],
-    parseUrl, titleUrl, fetchMeta, parseMeta, cards, spots, enrich, player, autoPlay,
+    parseUrl, titleUrl, fetchMeta, parseMeta, cards, spots, enrich, player, autoPlay, followObserve,
     dark: () => true,
   });
 })();
